@@ -1,5 +1,5 @@
 # Hacking with D3 / RxJS / React
-This is the source code to accompany the project at [andypeng.pythonanywhere.com](http://andypeng.pythonanywhere.com/), a free tutorial that teaches D3 coding using D3, RxJS, AngularJS, underscoreJS and more.
+This is the source code to accompany the project at ~~[andypeng.pythonanywhere.com](http://andypeng.pythonanywhere.com/)~~ [andy2046.github.io](https://andy2046.github.io/), a free tutorial that teaches D3 coding using D3, RxJS, AngularJS, underscoreJS and more.
 
 If you have questions, suggestions, or bug reports, you can find me on github [@andy2046](https://github.com/andy2046).
 
