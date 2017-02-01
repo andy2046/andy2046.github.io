@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>RxJS Demo</title>
+		<script src="static/assets/js/rx.all.js">
+		// https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.6/rx.all.js
+		</script>
+		
+        <script src="static/assets/js/rx.dom.js">
+		// static/assets/js  https://npmcdn.com/rx-dom@7.0.3/dist/rx.dom.js
+		</script>
+		<script src="static/assets/js/rx.binding.js">
+		// static/assets/js  https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.1.0/rx.binding.js
+		</script>
+		<script src="static/assets/js/rx.dom.ajax.js">
+		</script>
+			<link rel="stylesheet" href="static/assets/css/leaflet.css" />
+		<script src="static/assets/js/leaflet.js">
+		// http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css 
+		</script>
+		<script src="https://www.mapquestapi.com/sdk/leaflet/v2.s/mq-map.js?key=vEvzl9ba8RxjkrEpM1Xm3AxZ5T8EM2sz"></script>
+		
+		<!--[if lte IE 8]><script src="static/assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="static/assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="static/assets/css/ie8.css" /><![endif]-->
+		<style type="text/css">
+		<!--
+		body { margin: 0; padding: 0 }
+		pre { margin: 0 }
+		-->
+		
+		html, body {
+			margin:0;
+			padding:0;
+			height:100%;
+		}
+		
+		#map { 
+			height: 600px;
+			width: 800px;
+		}
+		
+		tr th, tr td {
+			font-family:sans-serif;
+			font-size:6pt;
+			font-weight:bold;
+		}
+		
+		</style>
+
+    </head>
+    <body>
+	
+	<!-- Header -->
+			<header id="header">
+				<a href="#" class="image avatar"><img src="static/images/avatar.jpg" alt="" /></a>
+				<h1><strong>I am Andy Peng</strong>, a super simple<br />
+				Python and Java software developer<br />
+				</h1>
+			</header>
+	
+	<!-- Main -->
+			<div id="main">
+			<h4></h4>
+			<h1>RxJS demo app.</h1>
+			
+			<span><h1></h1></span>
+			
+		<div id="map"></div>
+		<div id="mapTable"><table>
+		<thead>
+		<tr>
+		<th>Location</th>
+		<th>Magnitude</th>
+		<th>Time</th>
+		</tr>
+		</thead>
+		<tbody id="quakes_info">
+		</tbody>
+		</table>
+		</div>
+		<span><h1></h1></span>
+		<div>
+		<button onclick="SpaceShipReset()">Reset</button>
+		</div>
+		<div id="spaceshipParent">
+		<div id="spaceship"></div>
+		</div>
+		<script type="text/javascript">
+	function initialize() {
+	
+	//var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+	// http://{s}.tile.osm.org/{z}/{x}/{y}.png
+	//var osm = L.tileLayer(osmUrl);
+	//var map = L.map('map').setView([33.858631,-118.279602],7);//.addLayer(osm);
+	//L.tileLayer(osmUrl).addTo(map);
+	
+	var mapLayer = MQ.mapLayer(),
+		map;
+	
+	map = L.map('map', {
+		layers: mapLayer,
+		center: [35.858631,-118.279602],
+		zoom: 6
+	});
+	
+	L.control.layers({
+	'Map': mapLayer,
+	'Dark': MQ.darkLayer(),
+	'Light': MQ.lightLayer(),
+	'Satellite': MQ.satelliteLayer()
+	}).addTo(map);
+	
+	var QUAKE_URL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojsonp";
+	var codeLayers = {};
+	var quakeLayer = L.layerGroup([]).addTo(map);
+
+	function loadJSONP(url) {
+	//console.log(url);
+	var scrpt = document.createElement('script');
+	scrpt.src = url;
+	var head = document.getElementByTagName('head')[0];
+	head.appendChild(scrpt);
+	
+	}
+	
+	function makeRow(props) {
+		var row = document.createElement('tr');
+		row.id = props.net + props.code;
+		var date = new Date(props.time);
+		var time = date.toString();
+		[props.place, props.mag, time].forEach(function(text) {
+		var cell = document.createElement('td');
+		cell.textContent = text;
+		row.appendChild(cell);
+		});
+		return row;
+	}
+	
+	
+	var quakes= Rx.Observable.interval(5000)
+		.flatMap(function(){
+			return Rx.DOM.jsonpRequest({
+			url: QUAKE_URL,
+			jsonpCallback: 'eqfeed_callback'
+			}).retry(3);
+			})
+	.flatMap(function(r){
+		return Rx.Observable.from(r.response.features);
+		})
+	.distinct(function(quake){ return quake.properties.code; })
+	.share();
+	
+	quakes.subscribe(function(quake){
+	var coords = quake.geometry.coordinates;
+		var size = quake.properties.mag*10000;
+		var place = quake.properties.place;
+		var mytime = quake.properties.time;
+		var mydate = new Date(mytime).toGMTString();//.toLocaleString();//.toGMTString();
+		//console.log(coords,size);
+		//L.circle([coords[1],coords[0]],size).addTo(map);
+		var circle = L.circle([coords[1],coords[0]],size).addTo(map);
+		circle.bindPopup('<p><strong>Place: <span>' + place + '</span></strong></p>' + '<p><strong>Time: <span>' + mydate + '</span></strong></p>');
+		quakeLayer.addLayer(circle);
+		codeLayers[quake.id] = quakeLayer.getLayerId(circle);
+	});
+	
+	var table = document.getElementById('quakes_info');
+	
+	function getRowFromEvent(event) {
+    return Rx.Observable
+      .fromEvent(table, event)
+      .filter(function(event) { 
+        var el = event.target;
+        return el.tagName === 'TD' && el.parentNode.id.length;
+      })
+      .pluck('target', 'parentNode') 
+      .distinctUntilChanged(); 
+  }
+
+  getRowFromEvent('mouseover')
+    .pairwise()
+    .subscribe(function(rows) {
+       var prevCircle = quakeLayer.getLayer(codeLayers[rows[0].id]);
+       var currCircle = quakeLayer.getLayer(codeLayers[rows[1].id]);
+
+       prevCircle.setStyle({ color: '#0000ff' });
+       currCircle.setStyle({ color: '#ff0000' });
+      });
+
+	getRowFromEvent('click')
+    .subscribe(function(row) {
+		var circle = quakeLayer.getLayer(codeLayers[row.id]);
+		map.panTo(circle.getLatLng());
+      });
+	
+	quakes
+    .pluck('properties')
+    .map(makeRow)
+    .subscribe(function(row) { table.appendChild(row); });
+	
+	/*
+	quakes
+	.pluck('properties')
+	.map(makeRow)
+	.bufferWithTime(500)
+	.filter(function(rows) { return rows.length > 0; })
+	.map(function(rows) {
+		var fragment = document.createDocumentFragment();
+		rows.forEach(function(row) {
+		fragment.appendChild(row);
+		});
+		return fragment;
+	})
+	.subscribe(function(fragment) { table.appendChild(fragment); });
+	*/
+	
+	}
+	
+	Rx.DOM.ready().subscribe(initialize);
+	
+	//---------------------------------------------------------------------------------------------------
+	
+	function SpaceShip() {
+	
+	function Normalizer(min, max) {
+		return function(val) {
+			return (val - min) / (max - min);
+		}
+	}
+
+	function Interpolater(min, max, clamp) {
+		return function(val) {
+			val = min + (max - min) * val;
+			return clamp ? Math.min(Math.max(val, min), max) : val;
+		}
+	}
+
+	function Scale() {
+		var domain = new Normalizer(0, 1);
+		var range = new Interpolater(0, 1);
+		var s = function(val) {
+			return range(domain(val));
+		};
+	s.domain = function(min, max) {
+		if (!arguments.length) return domain;
+			domain = new Normalizer(min, max)
+			return s
+		};
+	s.range = function(min, max, clamp) {
+		if (!arguments.length) return range;
+			range = new Interpolater(min, max, clamp)
+			return s
+		};
+	return s;
+	}
+	
+	function animationLoop(scheduler) {
+		return Rx.Observable.generate(
+		0,
+		function() { return true; }, // Keep generating forever
+		function(x) { return x + 1; }, // Increment internal value
+		function(x) { return x; }, // Value to return on each notification
+		Rx.Scheduler.requestAnimationFrame); // Schedule to requestAnimationFrame
+	}
+	
+	var canvas = document.createElement('canvas');
+	canvas.setAttribute('id','spaceshipCanvas');
+	var ctx = canvas.getContext("2d");
+	//document.body.appendChild(canvas);
+	document.getElementById('spaceship').appendChild(canvas);
+	canvas.width = 500;//window.innerWidth;
+	canvas.height = 600;//window.innerHeight;
+	var WIDTH = 20, domainStart = 538, domainEnd = 1036, YPosition = 30;
+	var xScale = new Scale().domain(domainStart, domainEnd).range(WIDTH, canvas.width - WIDTH , true);
+	
+	
+	function paintStars(stars) {
+		ctx.fillStyle = '#000000';
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		ctx.fillStyle = '#ffffff';
+		stars.forEach(function(star) {
+		ctx.fillRect(star.x, star.y, star.size, star.size);
+		});
+	}
+	var SPEED = 40;
+	var STAR_NUMBER = 250;
+	var StarStream = Rx.Observable.range(1, STAR_NUMBER)
+	.map(function() {
+		return {
+			x: parseInt(Math.random() * canvas.width),
+			y: parseInt(Math.random() * canvas.height),
+			size: Math.random() * 3 + 1
+		};
+	})
+	.toArray()
+	.flatMap(function(arr) {
+		return animationLoop().map(function() {
+			return arr.map(function(star) {
+				if (star.y >= canvas.height) {
+				star.y = 0;
+				}
+				star.y += 3;
+				return star;
+      });
+    });
+  });
+  
+  /*
+	.flatMap(function(starArray) {
+		return Rx.Observable.interval(SPEED).map(function() {
+			starArray.forEach(function(star) {
+				if (star.y >= canvas.height) {
+					star.y = 0; // Reset star to top of the screen
+					}
+				star.y += 3; // Move star
+			});
+		return starArray;
+		});
+	});
+	//.subscribe(function(starArray) { paintStars(starArray); 	});
+	*/
+	
+	var HERO_Y = canvas.height - YPosition;
+	var mouseMove = Rx.Observable.merge( Rx.Observable.fromEvent(canvas, 'mousemove'),
+								Rx.Observable.fromEvent(canvas, 'touchmove') );
+	var SpaceShip = mouseMove
+	.map(function(event) {
+		//console.log('event.clientX:'+event.clientX); // 538 - 1336 
+		return {
+			x: event.clientX,
+			y: HERO_Y
+		};
+	})
+	.startWith({
+		x: domainStart + canvas.width / 2, 
+		y: HERO_Y
+	});
+	
+	function drawTriangle(x, y, width, color, direction) {
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		x = xScale(x); //( (x + width) > canvas.width ? canvas.width - width : x );
+		//console.log('x:'+x); // 538 - 780 (800-20)
+		ctx.moveTo(x - width, y);
+		ctx.lineTo(x, direction === 'up' ? y - width : y + width);
+		ctx.lineTo(x + width, y);
+		ctx.lineTo(x - width,y);
+		ctx.fill();
+	}
+
+	function paintSpaceShip(x, y) {
+		drawTriangle(x, y, WIDTH, '#ff0000', 'up');
+	}
+	
+	// Helper function to get a random integer
+	function getRandomInt(min, max) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+	
+	function collision(target1, target2) {
+		return (target1.x > target2.x - 20 && target1.x < target2.x + 20) &&
+			(target1.y > target2.y - 20 && target1.y < target2.y + 20);
+	}
+	
+	function paintEnemies(enemies) {
+		enemies.forEach(function(enemy) {
+		enemy.y += 5;
+		enemy.x += getRandomInt(-15, 15);
+		//console.log('enemy.x:'+enemy.x);
+		if (!enemy.isDead) {
+			drawTriangle(enemy.x, enemy.y, WIDTH, '#00ff00', 'down');
+		}
+		
+		enemy.shots.forEach(function(shot) {
+			shot.y += (SHOOTING_SPEED / 2);
+			drawTriangle(shot.x, shot.y, 5, '#00ffff', 'down');
+			});
+		});
+	}
+	
+	var playerFiring = Rx.Observable
+	.merge(
+		Rx.Observable.fromEvent(canvas, 'click'),
+		Rx.Observable.fromEvent(document, 'keydown')
+			.filter(function(evt) { //console.log(evt.type, evt.key || evt.which, evt.keyIdentifier);
+									// Space or F 
+					return (evt.key || evt.which) === 32 || (evt.key || evt.which) === 70; })
+		)
+	.sample(200)
+	.timestamp();
+	
+	function paintScore(score) {
+		//console.log('paintScore:' +score);
+		ctx.fillStyle = "white";
+		ctx.font = 'bold 26px sans-serif'; //"30px Verdana";
+		ctx.fillText("Score: " + score, xScale(domainStart + canvas.width / 2), canvas.height - 2 * YPosition);
+	}
+	
+	
+	var ScoreSubject = new Rx.BehaviorSubject(0);//Rx.Subject();
+	var score = ScoreSubject.scan(function (prev, cur) {
+		return prev + cur;
+	}, 0);//.concat(Rx.Observable.return(0));
+	
+	//console.log(score);
+	
+	var HeroShots = Rx.Observable
+	.combineLatest(
+		playerFiring,
+		SpaceShip,
+		function(shotEvents, spaceShip) {
+			return {
+			timestamp: shotEvents.timestamp,
+			x: spaceShip.x
+			};
+		})
+	.distinctUntilChanged(function(shot) { return shot.timestamp; })
+	.scan(function(shotArray, shot) {
+		shotArray.push({ x:shot.x, y: HERO_Y });
+		return shotArray;
+	}, []);
+	
+	var SHOOTING_SPEED = 50;
+	var SCORE_INCREASE = 10;
+	
+	function paintHeroShots(heroShots, enemies) {
+		heroShots.forEach(function(shot, i) {
+			for (var l=0; l<enemies.length; l++) {
+				var enemy = enemies[l];
+				if (!enemy.isDead && collision(shot, enemy)) {
+					ScoreSubject.onNext(SCORE_INCREASE);
+					enemy.isDead = true;
+					shot.x = shot.y = -100;
+					break;
+				}
+			}
+		shot.y -= SHOOTING_SPEED;
+		drawTriangle(shot.x, shot.y, 5, '#ffff00', 'up');
+		});
+	}
+	
+	function renderScene(actors) {
+		paintStars(actors.stars);
+		paintSpaceShip(actors.spaceship.x, actors.spaceship.y);
+		paintEnemies(actors.enemies);
+		paintHeroShots(actors.heroShots,actors.enemies);
+		paintScore(actors.score);
+	}
+	
+	function isVisible(obj) {
+		return obj.x > -40 && obj.x < canvas.width + 40 &&
+			obj.y > -40 && obj.y < canvas.height + 40;
+	}
+	
+	var ENEMY_FREQ = 2500;
+	var ENEMY_SHOOTING_FREQ = 1500;
+
+	var Enemies = Rx.Observable.interval(ENEMY_FREQ)
+	.scan(function(enemyArray) {
+		var enemy = {
+		x: parseInt(Math.random() * canvas.width + domainStart),
+		y: -30,
+		shots: []
+		};
+	Rx.Observable.interval(ENEMY_SHOOTING_FREQ).subscribe(function() {
+		if (!enemy.isDead) {
+			enemy.shots.push({ x: enemy.x, y: enemy.y });
+		}
+		
+		enemy.shots = enemy.shots.filter(isVisible);
+		});
+		enemyArray.push(enemy);
+		return enemyArray.filter(isVisible)
+		.filter(function(enemy) {
+			return !(enemy.isDead && enemy.shots.length === 0);
+		});
+	}, []);
+	
+	function gameOver(ship, enemies) {
+		return enemies.some(function(enemy) {
+			if (collision(ship, enemy)) {
+				return true;
+			}
+			return enemy.shots.some(function(shot) {
+				return collision(ship, shot);
+			});
+		});
+	}
+	
+	var Game = Rx.Observable.combineLatest(
+		StarStream, SpaceShip, Enemies, HeroShots, score,
+		function(stars, spaceship, enemies, heroShots, scr ) { 
+			return {
+			stars: stars,
+			spaceship: spaceship,
+			enemies: enemies,
+			heroShots: heroShots
+			,score: scr
+			};
+			})
+		.sample(SPEED)
+		.takeWhile(function(actors) {
+			return gameOver(actors.spaceship, actors.enemies) === false;
+		});
+	Game.subscribe(renderScene);
+
+	
+	}
+	
+	window.onload = function () {
+		SpaceShip();
+	}
+	
+	function SpaceShipReset() {
+		var divOrg = document.getElementById('spaceship');
+		var spaceshipCanvas = document.getElementById('spaceshipCanvas');
+		spaceshipCanvas.parentNode.removeChild(spaceshipCanvas);
+		divOrg.parentNode.removeChild(divOrg);
+		var divNew = document.createElement('div');
+		divNew.setAttribute('id','spaceship');
+		var divParent = document.getElementById('spaceshipParent');
+		divParent.appendChild(divNew);
+		SpaceShip();
+	}
+
+	
+	//---------------------------------------------------------------------------------------------------
+	
+        </script>
+		</div>
+		<div>
+		</div>
+		
+		<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+					<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+					<li><a href="#" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled</li><li>Design: <a href="#">Unknown</a></li>
+				</ul>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="static/assets/js/jquery.min.js"></script>
+			<script src="static/assets/js/jquery.poptrox.min.js"></script>
+			<script src="static/assets/js/skel.min.js"></script>
+			<script src="static/assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="static/assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="static/assets/js/main.js"></script>
+		
+    </body>
+</html>

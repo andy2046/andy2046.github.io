@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AngularJS List</title>
+
+	<link rel="stylesheet" href="main.css" />
+	
+<script type="text/javascript">
+//	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js">
+//		// src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"  src="angular.min.js"
+//		// use <span ng-bind="name"></span> instead of {{ name }} to avoid conflict with Django template 
+//	</ script>
+//	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-messages.js">
+//	</ script>
+//	<!--[if lte IE 8]><script src="static/assets/js/ie/html5shiv.js"></ script><![endif]-->
+//		<link rel="stylesheet" href="static/assets/css/main.css" />
+//		<!--[if lte IE 8]><link rel="stylesheet" href="static/assets/css/ie8.css" /><![endif]-->
+//
+</script>
+
+<style type="text/css">
+
+div {
+margin: 30px;
+}
+
+input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+    border-radius: 0;
+}
+input[type="radio"] {
+    -webkit-appearance: radio;
+    border-radius: 0;
+}
+
+
+table, th , td {
+border: 1px solid grey;
+border-collapse: collapse;
+padding: 5px;
+}
+
+table tr:nth-child(odd) {
+background-color: #f2f2f2;
+}
+
+table tr:nth-child(even) {
+background-color: #ffffff;
+}
+
+.cust {
+	border:0px;
+    text-align: center;
+    text-decoration: none;
+	outline:none;
+	border-radius: 25px;
+   }
+
+.selected {
+    background-color:black;
+    color:blue;
+    font-weight:bold;
+}
+
+.err {
+    color:blue;
+    font-weight:bold;
+}
+
+ input.ng-invalid.ng-dirty {
+        background-color: #FA787E;
+      }
+    
+ input.ng-valid.ng-dirty {
+        background-color: #78FA89;
+      }
+
+</style>
+
+  </head>
+  
+  <body>
+   <div>
+	<h1>Sales List</h1>( click on item to switch )
+    <list-directive></list-directive>
+	<script src="ngApp.bundle.js"></script>
+   </div>
+  </body>
+</html>

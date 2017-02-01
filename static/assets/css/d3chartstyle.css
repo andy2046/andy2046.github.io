@@ -1,0 +1,53 @@
+ text {
+  font: 10px sans-serif;
+}
+
+rect.background {
+  fill: white;
+}
+
+.axis {
+  shape-rendering: crispEdges;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+ /*  fill-opacity: 1;
+  stroke-opacity: 1; 
+  stroke-width: 0.5px; */
+}
+
+.hidden text {
+			display: none;
+		}
+
+  .tooltipsvg {
+            position: absolute;
+            width: 100px;
+            height: auto;
+            padding: 10px;
+            background-color: white;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+			left: 80%;
+			-moz-transform: translate(-80%, 0);
+			-webkit-transform: translate(-80%, 0);
+			transform: translate(-80%, 0);
+		}
+  .tooltipsvg.hidden {
+			display: none;
+		}
+  .tooltipsvg p {
+             margin: 0;
+             font-family: sans-serif;
+             font-size: 12px;
+             line-height: 20px;
+		}
+ 

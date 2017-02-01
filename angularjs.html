@@ -1,0 +1,610 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AngularJS Demo</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js">
+		// src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"  src="angular.min.js"
+		// use <span ng-bind="name"></span> instead of {{ name }} to avoid conflict with Django template 
+	</script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-messages.js">
+	</script>
+	<!--[if lte IE 8]><script src="static/assets/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="static/assets/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="static/assets/css/ie8.css" /><![endif]-->
+	
+<style>
+input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+    border-radius: 0;
+}
+input[type="radio"] {
+    -webkit-appearance: radio;
+    border-radius: 0;
+}
+
+
+table, th , td {
+border: 1px solid grey;
+border-collapse: collapse;
+padding: 5px;
+}
+
+table tr:nth-child(odd) {
+background-color: #f2f2f2;
+}
+
+table tr:nth-child(even) {
+background-color: #ffffff;
+}
+
+.cust {
+	border:0px;
+    text-align: center;
+    text-decoration: none;
+	outline:none;
+	border-radius: 25px;
+   }
+
+.selected {
+    background-color:black;
+    color:blue;
+    font-weight:bold;
+}
+
+.err {
+    color:blue;
+    font-weight:bold;
+}
+
+ input.ng-invalid.ng-dirty {
+        background-color: #FA787E;
+      }
+    
+ input.ng-valid.ng-dirty {
+        background-color: #78FA89;
+      }
+
+</style>
+</head>
+<body id="top">
+	
+	<!-- Header -->
+			<header id="header">
+				<a href="#" class="image avatar"><img src="static/images/avatar.jpg" alt="" /></a>
+				<h1><strong>I am Andy Peng</strong>, a super simple<br />
+				Python and Java software developer<br />
+				</h1>
+			</header>
+	
+	<!-- Main -->
+			<div id="main">
+<h4></h4>
+<h1>AngularJS demo app.</h1>
+<a href="../ngTodo" class="button"><h1>NG 1.x Todo List</h1></a> VS 
+<a href="../react" class="button"><h1>React Todo List</h1></a>
+<span><h1></h1></span>
+<div ng-app="mainApp" ng-controller="studentController">
+<form name='studentForm'>
+Enter first name: <input type="text" name="firstName" ng-model="student.firstName" ng-keyup="cancel($event)" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 } }"><br><br>
+Enter last name: <input type="text" name="lastName" ng-model="student.lastName" ng-keyup="cancel($event)" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 } }"><br><br>
+You are entering:  <span ng-bind="student.fullName() | uppercase | lowercase | titleCase"></span>
+</form><br><br>
+<table>
+<tr>
+<th>Name</th>
+<th>Marks</th>
+<th>Action</th>
+</tr>
+<tr ng-repeat="subject in student.subjects" ng-class="{'selected': ( $index == selectedRow )}" ng-click="selectRow($index)">
+<td><span ng-bind="subject.name"></span></td>
+<td><span ng-bind="subject.marks"></span></td>
+<td><button ng-click="remove($index)"> Remove </button></td>
+</tr>
+</table>
+<br><br>
+<p>Enter your location: <input type="text" ng-model="geo.location" ng-change="geo.retrv()" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 } }"></p>
+
+<!--<button ng-click="geo.retrv()">Retrieve</button>  
+<p>url: <span ng-bind="geo.url2()"></span></p>
+ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 2000, 'blur': 0 } }" -->
+<p>location lng:<span ng-bind="geo.lng"></span></p>
+<p>location lat:<span ng-bind="geo.lat"></span></p>
+<p>location: <span ng-bind="geo.retrv()"></span></p>
+<br><br>
+<div ng-controller="circleController">
+<input type="checkbox" ng-model="enableDisableButton">Click to Disable Button
+<button ng-disabled="enableDisableButton">1 Click Me!</button><br><br>
+<input type="checkbox" ng-model="showHide1">Click to Show Button
+<button ng-show="showHide1">2 Click Me!</button><br><br>
+<input type="checkbox" ng-model="showHide2">Click to Hide Button
+<button ng-hide="showHide2">3 Click Me!</button><br><br>
+<button ng-click="clickCounter = clickCounter + 1">Click Me!</button>
+Total click: <span ng-bind="clickCounter"></span>
+
+   <p>Enter your Name: <input type="text" ng-model="name"></p>
+   <p>Hello <span ng-bind="name"></span>, <span ng-bind="hey"></span></p>
+   <p>Enter locale: <input type="text" ng-model="localeName"></p>
+   <p>List of Countries with locale:</p>
+   <ol>
+      <li ng-repeat="country in countries | filter : localeName | orderBy:'name' ">
+         Country: <span ng-bind="country.name"></span>, Locale: <span ng-bind="country.locale"></span>
+      </li>
+   </ol>
+   <p>Hello, <span ng-bind="student2.firstname"></span> <span ng-bind="student2.lastname"></span></p>   
+   <p>Expense on Books : <span ng-bind="cost * quantity | currency"></span> RMB</p>
+   <p>Roll No: <span ng-bind="student2.rollno"></span></p>
+   <p>Marks(Math): <span ng-bind="marks[3]"></span></p>
+</div>
+
+<div ng-controller="CartController">
+<div ng-repeat="item in items">
+<span ng-bind="item.title"></span>
+<input ng-model="item.quantity">
+<span ng-bind="item.price | currency"></span>
+<span ng-bind="item.price * item.quantity | currency"></span><br><br>
+</div>
+<div>Total: <span ng-bind="bill.total | currency"></span></div>
+<div>Discount: <span ng-bind="bill.discount | currency"></span></div>
+<div>Subtotal: <span ng-bind="bill.subtotal | currency"></span></div>
+<div>* $10 discount for more than $200 total</div>
+</div>
+
+<h1>Sign Up</h1>
+<div class="row">
+<div class="8u 12u$(small)">							
+	<form name='addUserForm' id='addUserForm' ng-controller="AddUserController">
+	<div ng-show='message'><span ng-bind="message"></span></div><br>
+		<div class="row uniform 50%">
+			
+			<div class="6u 12u$(xsmall)"><input type="text" name='firstName' placeholder="First Name" ng-model='user.first' required></div>
+			<div class="6u 12u$(xsmall)"><input type="text" name='lastName' placeholder="Last Name" ng-model='user.last' required></div>
+			<div class="6u 12u$(xsmall)"><input type='email' name='email' placeholder="Email" ng-model='user.email' required>
+				<div class="err" ng-show="addUserForm.email.$dirty && addUserForm.email.$invalid">Invalid:
+				<span class="err" ng-show="addUserForm.email.$error.required">Tell us your email.</span>
+				<span class="err" ng-show="addUserForm.email.$error.email">This is not a valid email.</span>
+				</div>
+			</div>
+			<div class="6u 12u$(xsmall)"><input type="text" type='number' placeholder="Age" ng-model='user.age' ng-maxlength='3' ng-min='1'></div>
+			</div>
+			<div>
+			<br />
+			<ul class="actions">
+			<li><input type="submit" ng-click='addUser()' ng-disabled='!addUserForm.$valid' value="Submit" /></li>
+			</ul>
+			</div>
+		
+</form>
+</div></div>
+
+<input type="submit" value="Drag Me" draggable />
+<p />
+<div a-directive
+       some-attr="www.google.com"
+       my-link-text="Click me to visit this website">
+</div>
+
+<p />
+<div>
+    <h1>List of Staff</h1>
+    <staff-list></staff-list>
+</div>
+<p />
+<div>
+	<h1>Sales List</h1>
+    <items-container></items-container>
+</div>
+</div>
+
+
+
+<script>
+var mainApp = angular.module("mainApp", ['ngMessages', 'staffListM', 'staffEditorM', 'app1']);
+//ng-app="staffApp"
+mainApp.directive('draggable', function($document) {
+    var startX=0, startY=0, x = 0, y = 0;
+    return function(scope, element, attr) {
+      element.css({
+       position: 'relative'
+       /**,border: '1px solid blue',
+       backgroundColor: 'lightgrey',
+       cursor: 'pointer',
+	   width: '50px', 
+	   height: '50px', 
+	   display: 'inline-block'*/
+      });
+      element.bind('mousedown', function(event) {
+        startX = event.screenX - x;
+        startY = event.screenY - y;
+        $document.bind('mousemove', mousemove);
+        $document.bind('mouseup', mouseup);
+      });
+
+      function mousemove(event) {
+        y = event.screenY - startY;
+        x = event.screenX - startX;
+        element.css({
+          top: y + 'px',
+          left:  x + 'px'
+        });
+      }
+
+      function mouseup() {
+        $document.unbind('mousemove', mousemove);
+        $document.unbind('mouseup', mouseup);
+      }
+    }
+ });
+
+mainApp.directive('aDirective', function() {
+      return {
+        restrict: 'A',
+        replace: true,
+        scope: {
+          myUrl: '@someAttr', //use = for 2 way binding use @ for local scope use & for parent scope  
+          myLinkText: '@'
+        },
+        template: '\
+          <div>\
+            <label>Url Field:</label>\
+            <input type="text" ng-model="myUrl" /> \
+            <a ng-href="{{myUrl | urlFilter}}"> <span ng-bind="myLinkText"></span></a> \
+          </div>\
+        '
+      }
+    });
+
+mainApp.filter("urlFilter", function () {
+return function (link) {
+    var result;
+    var startingUrl = "http://";
+    var httpsStartingUrl = "https://"; 
+    if(link.startWith(startingUrl)||link.startWith(httpsStartingUrl)){
+        result = link;
+    }
+    else {
+    result = startingUrl + link;
+    }
+    return result;
+}
+});
+String.prototype.startWith = function (str) {
+return this.indexOf(str) == 0;
+};
+
+mainApp.filter('titleCase', function() {
+var titleCaseFilter = function(input) {
+var words = input.split(' ');
+for (var i = 0; i < words.length; i++) {
+words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1);
+}
+return words.join(' ');
+};
+return titleCaseFilter;
+});
+
+mainApp.controller('studentController', function($scope) {
+   $scope.student = {
+      firstName: "Andy",
+      lastName: "Peng",
+	  subjects:[
+{name:'Physics',marks:90},
+{name:'Chemistry',marks:80},
+{name:'Math',marks:85},
+{name:'English',marks:85},
+{name:'Chinese',marks:97}
+],
+      fullName: function() {
+         var studentObject;
+         studentObject = $scope.student;
+         return studentObject.firstName + " " + studentObject.lastName;
+      }
+   };
+   
+   $scope.cancel = function(e) {
+    if (e.keyCode == 27) { //press Escape to rollback 
+	  var idValue = e.target.attributes.name.value;
+	  //console.log(idValue);
+	  if(idValue==="firstName") {$scope.studentForm.firstName.$rollbackViewValue();}
+	  if(idValue==="lastName") {$scope.studentForm.lastName.$rollbackViewValue();}
+    }
+  };
+   
+   $scope.selectedRow = null;
+   $scope.remove = function(index) {
+		if(index < $scope.selectedRow) { $scope.selectedRow-=1;}
+		else if(index == $scope.selectedRow) { $scope.selectedRow = null;}
+		$scope.student.subjects.splice(index, 1); 
+   };
+   $scope.selectRow = function(row) {
+		$scope.selectedRow = row;
+		//alert($scope.selectedRow);
+	};
+   $scope.geo ={
+   location :'singapore',
+   lng :'xxx',
+   lat :'xxx',
+   rst : 'xxx',
+   url2: function() {
+   var g1;
+	g1 = $scope.geo;
+   return "https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address="+g1.location;
+                  },
+	retrv: function(){
+	var g2;
+	g2 = $scope.geo;
+	var xmlhttp = new XMLHttpRequest();
+		//var url = " https://maps.googleapis.com/maps/api/geocode/json?sensor=false&address="+$scope.location;
+	xmlhttp.open("GET", g2.url2() , true);
+	xmlhttp.onreadystatechange = function() {
+if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+ g2.rst = xmlhttp.responseText;
+//alert(g2.rst);
+    var myArr = JSON.parse(g2.rst);
+	//alert(myArr['results'][0]['geometry']['location']['lng']);
+	
+    g2.lng = myArr['results'][0]['geometry']['location']['lng'];
+	g2.lat = myArr['results'][0]['geometry']['location']['lat'];
+	//return g2.lng +' '+ g2.lat ;
+    }
+};
+
+xmlhttp.send();
+return g2.rst; //g2.lng +' '+ g2.lat ;
+}
+//$scope.retrv();
+};
+});
+
+mainApp.controller("circleController", function($scope) {
+         $scope.countries = [{locale:'en-US',name:'United States'},
+                                    {locale:'en-GB',name:'United Kingdom'},
+									{locale:'cn-ZH',name:'China'},
+									{locale:'en-AU',name:'Australia'},
+									{locale:'en-DE',name:'Germany'},
+                                    {locale:'en-FR',name:'France'}];
+									$scope.hey=' how are you doing today.';
+									$scope.quantity=1;
+									$scope.cost=30;
+									$scope.student2={firstname:'Andy',lastname:'Peng',rollno:101};
+									$scope.marks=[80,90,75,73,60];
+									
+      });
+
+mainApp.controller("CartController", function($scope) {
+$scope.bill = {};
+$scope.items = [
+{title: 'Paint pots', quantity: 8, price: 3.95},
+{title: 'Polka dots', quantity: 17, price: 12.95},
+{title: 'Pebbles', quantity: 5, price: 6.95}
+];
+var calculateTotals = function() {
+var total = 0;
+for (var i = 0, len = $scope.items.length; i < len; i++) {
+total = total + $scope.items[i].price * $scope.items[i].quantity;
+}
+$scope.bill.total = total;
+$scope.bill.discount = total > 200 ? 10 : 0;
+$scope.bill.subtotal = total - $scope.bill.discount;
+};
+$scope.$watch('items', calculateTotals, true);
+});	  
+
+mainApp.controller("AddUserController", function($scope) {
+$scope.message = 'First Name, Last Name and Email required*';
+$scope.addUser = function () {
+// TODO: actually save user to database...
+$scope.message = 'Thanks, ' + $scope.user.first + ', we added you!';
+};
+
+});
+
+
+//---staff list start-----------------------------------------------------------
+
+var staffListM = angular.module('staffListM', []);
+
+staffListM.directive('staffList', function() {
+    return {
+	  restrict: 'EA',
+      scope: {},
+      template: '<section> <ul> <li ng-repeat="staff in ctrl.staffs"> <span ng-bind="staff.firstName"></span> \
+					<span ng-bind="staff.lastName"></span> </li> </ul> \
+				<staff-editor-form staffs="ctrl.staffs"> </staff-editor-form> </section>',
+      replace: true,
+      controller: 'StaffListCtrl',
+      controllerAs: 'ctrl'
+    }
+  });
+  
+  staffListM.controller('StaffListCtrl', function() {
+  var self = this;
+    console.log(self);
+    self.staffs = [
+      {firstName: 'Roy', lastName: 'Wang'},
+      {firstName: 'Joshua', lastName: 'Foo'},
+      {firstName: 'Sun', lastName: 'Tey'},
+      {firstName: 'Samon', lastName: 'Rui'}
+    ];
+  console.log(self.staffs);
+  });
+  
+var staffEditorM = angular.module('staffEditorM', []);
+
+  staffEditorM.directive('staffEditorForm', function() {
+    return {
+	  restrict: 'EA',
+      scope: {
+        staffs: '='
+      }, 
+      template: '<div class="row"> <div class="8u 12u$(small)"> <form name="staffForm" novalidate> <h2>New Staff</h2> <div class="row uniform 50%"> \
+	  <div class="6u 12u$(xsmall)"> <input type="text" name="firstName" placeholder="First Name" \
+	  ng-model="ctrl.staff.firstName" ng-maxlength="10" ng-pattern="/^[a-zA-Z0-9]+$/" required>  \
+	  <div ng-messages="staffForm.firstName.$error" ng-show="staffForm.firstName.$touched || staffForm.firstName.$dirty"> \
+      <div class="err" ng-message="required">You forgot to enter your first name...</div> \
+	  <div class="err" ng-message="pattern">Your first name should contain only letters or number...</div> \
+	  <div class="err" ng-message="maxlength">Your first name is too long (Max length is 10)...</div></div> </div> \
+ <div class="6u 12u$(xsmall)"><input type="text" name="lastName" placeholder="Last Name" \
+ ng-model="ctrl.staff.lastName" ng-maxlength="10" ng-pattern="/^[a-zA-Z0-9]+$/" required> \
+ <div ng-messages="staffForm.lastName.$error" ng-show="staffForm.lastName.$touched || staffForm.lastName.$dirty"> \
+      <div class="err" ng-message="required">You forgot to enter your last name...</div> \
+	  <div class="err" ng-message="pattern">Your last name should contain only letters or number...</div> \
+	  <div class="err" ng-message="maxlength">Your last name is too long (Max length is 10)...</div> </div> </div></div> \
+ <div> <br /> <ul class="actions"> <li><input type="submit" ng-click="ctrl.reset(staffForm)" ng-disabled="staffForm.$pristine" value="Reset" /> </li> \
+ <li><input type="submit" ng-click="ctrl.save(staffForm)" ng-disabled="staffForm.$invalid" value="Save" /> </li> </ul> </div> </form></div></div>',
+      replace: true,
+	  bindToController: true,
+      controller: 'StaffEditorFormCtrl',
+      controllerAs: 'ctrl'
+    }
+  });
+  staffEditorM.controller('StaffEditorFormCtrl', function() {
+	var self = this;
+    self.staff = {};
+    
+    this.save = function(form) {
+	if(self.staff && self.staff.firstName && self.staff.lastName) {
+      self.staffs.push(self.staff);
+      self.staff = {};
+	  form.$rollbackViewValue();
+      form.$setPristine(); //Set pristine state
+      form.$setUntouched(); //Set state from touched to untouched
+	  }
+    };
+    
+	this.reset = function(form) {
+      self.staff = {};
+	  form.$rollbackViewValue();
+      form.$setPristine(); //Set pristine state
+      form.$setUntouched(); //Set state from touched to untouched
+    };
+	
+  });
+
+//var staffApp = angular.module('staffApp', ['staffListM', 'staffEditorM']);
+
+//---staff list end-------------------------------------------------------------------
+
+//---sale list start-------------------------------------------------------------------
+
+
+var app1 = angular.module('app1', []);
+
+app1.controller('ItemsContainerController', function() {
+
+    var items = [{
+      id: 1,
+      name: 'Apple',
+      active: true
+    }, {
+      id: 2,
+      name: 'Orange',
+      active: true
+    }, {
+      id: 3,
+      name: 'Banana',
+      active: false
+    }, {
+      id: 4,
+      name: 'Kiwi',
+      active: true
+    }, {
+      id: 5,
+      name: 'Avocado',
+      active: false
+    }],
+      self = this;
+
+    // init
+    updateItems();
+
+    function updateItems(filteredItems) {
+      var collection = filteredItems || items;
+      self.activeItems = collection.filter(function(item) {
+        return item.active;
+      });
+      
+      self.inactiveItems = collection.filter(function(item) {
+        return !item.active;
+      });
+    }
+
+    this.switchStatus = function(item) {
+      item.active = !item.active;
+      updateItems();
+    };
+
+
+  });
+
+
+app1.directive('itemsContainer', function() {
+  return {
+    controller: 'ItemsContainerController',
+    controllerAs: 'ctrl',
+    bindToController: true,
+    template: '<div class="main"> <items-list data-title="Items On Sale" data-items="ctrl.activeItems" data-on-click="ctrl.switchStatus(item)"></items-list> \
+ <items-list data-title="Items Sold Out" data-items="ctrl.inactiveItems" data-on-click="ctrl.switchStatus(item)"></items-list> </div>'
+  };
+});
+
+app1.directive('item', function() {
+  return {
+    scope: {
+      item: '=set',
+      onClick: '&'
+    },
+    controller: function() {},
+    controllerAs: 'ctrl',
+    bindToController: true,
+    restrict: 'EA',
+    template: '<input type="checkbox" ng-click="ctrl.onClick({item: ctrl.item})" ng-checked="ctrl.item.active" /> <span ng-bind="ctrl.item.name"></span> '
+  }
+});
+
+app1.directive('itemsList', function() {
+  return {
+    scope: {
+      title: '@',
+      items: '=',
+      onClick: '&'
+    },
+    restrict: 'EA',
+    controller: function() {},
+    controllerAs: 'ctrl',
+    bindToController: true,
+    template: '<div class="items-list"> <h3><span ng-bind="ctrl.title"></span></h3><span ng-if="ctrl.items.length == 0">No items available.</span> \
+ <ul class="items"> <li ng-repeat="item in ctrl.items"> <item data-set="item" on-click="ctrl.onClick({item: item})"></item> </li></ul></div>'
+  }
+});
+
+
+//---sale list end-------------------------------------------------------------------
+
+</script>
+
+</div>
+		
+		<!-- Footer -->
+			<footer id="footer">
+				<ul class="icons">
+					<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+					<li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+					<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+					<li><a href="#" class="icon fa-envelope-o"><span class="label">Email</span></a></li>
+				</ul>
+				<ul class="copyright">
+					<li>&copy; Untitled</li><li>Design: <a href="#">Unknown</a></li>
+				</ul>
+			</footer>
+
+		<!-- Scripts -->
+			<script src="static/assets/js/jquery.min.js"></script>
+			<script src="static/assets/js/jquery.poptrox.min.js"></script>
+			<script src="static/assets/js/skel.min.js"></script>
+			<script src="static/assets/js/util.js"></script>
+			<!--[if lte IE 8]><script src="static/assets/js/ie/respond.min.js"></script><![endif]-->
+			<script src="static/assets/js/main.js"></script>
+			
+</body>
+</html>

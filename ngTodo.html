@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>AngularJS Todo List</title>
+		
+	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="bootstrap.min.css">
+	
+<script type="text/javascript">
+//	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js">
+//		// src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"  src="angular.min.js"
+//		// use <span ng-bind="name"></span> instead of {{ name }} to avoid conflict with Django template 
+//	</ script>
+//	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular-messages.js">
+//	</ script>
+//	<!--[if lte IE 8]><script src="static/assets/js/ie/html5shiv.js"></ script><![endif]-->
+//		<link rel="stylesheet" href="static/assets/css/main.css" />
+//		<!--[if lte IE 8]><link rel="stylesheet" href="static/assets/css/ie8.css" /><![endif]-->
+//   <base href="/">
+//   <link rel="stylesheet" href="main.css" />
+</script>
+
+<style type="text/css">
+
+div *:hover {
+    
+}
+
+.ng-hide-add,
+.ng-hide-remove {
+	display: block !important;
+}
+
+
+
+.cssSlideUp.ng-hide-add {
+  transform: rotateZ(0);
+  transform-origin: right;
+  transition: all 0.5s ease-in-out;
+}
+
+.cssSlideUp.ng-hide-add.ng-hide-add-active {
+  transform: rotateZ(-120deg);
+}
+
+.cssSlideUp.ng-hide-remove {
+  transform: rotateY(90deg);
+  transform-origin: left;
+  transition: all 0.5s ease;
+}
+
+.cssSlideUp.ng-hide-remove.ng-hide-remove-active {
+  transform: rotateY(0);
+}
+
+</style>
+
+  </head>
+  
+  <body>
+   <div>
+    <div ui-view></div>
+	<script src="ngTodo.bundle.js"></script>
+   </div>
+  </body>
+</html>

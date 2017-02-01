@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Monthly Incident Trend</title>
+</head>
+
+<link href="./static/assets/css/bootstrap.min.css" rel="stylesheet" />
+<link href="./static/assets/css/d3chartstyle.css" rel="stylesheet" />
+
+<style>
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    margin-left: 300px;
+}
+
+path { 
+    stroke-width: 2px;
+    fill: none;
+}
+
+.hover path {stroke-width: 6px !important}
+
+.line.hover path {stroke-width: 6px !important}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+.focus circle {
+  fill: none;
+  stroke: steelblue;
+}
+		
+
+</style>
+<body>
+<div><p><h3>Monthly Incident Trend</h3></p></div>
+<br>
+<div id="navPathtop10vlm"></div>
+<br>
+<div id="top10vlm"></div>
+<div></div>
+<br />
+<div id="contenttabletop10vlm"></div>
+<br />
+<div></div>
+
+
+<script src="./static/assets/js/bts2_baseline.js"></script>
+<script src="./static/assets/js/d3.v3.min.js"></script>
+
+<script>
+
+
+
+document.addEventListener("DOMContentLoaded", function(event) {
+ 
+    var actualLineData = '[{"sev2": 18, "date": "01-Jun-16", "total": 1510}, {"sev2": 11, "date": "01-Jul-16", "total": 1308}, {"sev2": 14, "date": "01-Apr-16", "total": 1272}, {"sev2": 31, "date": "01-May-16", "total": 1754}, {"sev2": 20, "date": "01-Feb-16", "total": 1557}, {"sev2": 24, "date": "01-Mar-16", "total": 2602}, {"sev2": 11, "date": "01-Jan-16", "total": 1598}, {"sev2": 25, "date": "01-Aug-16", "total": 1270}, {"sev2": 11, "date": "01-Sep-16", "total": 1723}, {"sev2": 9, "date": "01-Oct-16", "total": 2066}, {"sev2": 17, "date": "01-Nov-16", "total": 2348}]';
+	
+	var baseLineData = '[{"date": "01-Jun-16", "avg": 1287, "baseline": 1262, "target": 965}, {"date": "01-Jul-16", "avg": 1287, "baseline": 1426, "target": 965}, {"date": "01-Apr-16", "avg": 1287, "baseline": 1453, "target": 965}, {"date": "01-May-16", "avg": 1287, "baseline": 1210, "target": 965}, {"date": "01-Feb-16", "avg": 1287, "baseline": 1028, "target": 965}, {"date": "01-Mar-16", "avg": 1287, "baseline": 1184, "target": 965}, {"date": "01-Jan-16", "avg": 1287, "baseline": 1121, "target": 965}, {"date": "01-Aug-16", "avg": 1287, "baseline": 1369, "target": 965}, {"date": "01-Sep-16", "avg": 1287, "baseline": 1544, "target": 965}, {"date": "01-Oct-16", "avg": 1287, "baseline": 1368, "target": 965}, {"date": "01-Nov-16", "avg": 1287, "baseline": 1117, "target": 965}, {"date": "01-Dec-16", "avg": 1287, "baseline": 1356, "target": 965}]';
+	
+	var svgElement = d3.select("#top10vlm");
+	drawbaseline(svgElement,actualLineData,baseLineData);
+	
+
+	
+});
+</script>
+</body>
+</html>
