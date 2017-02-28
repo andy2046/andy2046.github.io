@@ -172,3 +172,9 @@ text-decoration: none;
 color: #999;
 font-size: 17px;
 }
+.div2 {
+    float:right;
+}
+.div1 {
+    display: inline-flex;
+}
