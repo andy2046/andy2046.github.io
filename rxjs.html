@@ -57,7 +57,7 @@
 			<header id="header">
 				<a href="#" class="image avatar"><img src="static/images/avatar.jpg" alt="" /></a>
 				<h1><strong>I am Andy Peng</strong>, a super simple<br />
-				Python and Java software developer<br />
+				Golang and Node.js software engineer<br />
 				</h1>
 			</header>
 	
@@ -271,7 +271,7 @@
 	var ctx = canvas.getContext("2d");
 	//document.body.appendChild(canvas);
 	document.getElementById('spaceship').appendChild(canvas);
-	canvas.width = 500;//window.innerWidth;
+	canvas.width = 850;//window.innerWidth;
 	canvas.height = 600;//window.innerHeight;
 	var WIDTH = 20, domainStart = 538, domainEnd = 1036, YPosition = 30;
 	var xScale = new Scale().domain(domainStart, domainEnd).range(WIDTH, canvas.width - WIDTH , true);
@@ -330,7 +330,7 @@
 	.map(function(event) {
 		//console.log('event.clientX:'+event.clientX); // 538 - 1336 
 		return {
-			x: event.clientX,
+			x: event.clientX-50,
 			y: HERO_Y
 		};
 	})
@@ -423,7 +423,7 @@
 		return shotArray;
 	}, []);
 	
-	var SHOOTING_SPEED = 50;
+	var SHOOTING_SPEED = 80;
 	var SCORE_INCREASE = 10;
 	
 	function paintHeroShots(heroShots, enemies) {
@@ -455,7 +455,7 @@
 			obj.y > -40 && obj.y < canvas.height + 40;
 	}
 	
-	var ENEMY_FREQ = 2500;
+	var ENEMY_FREQ = 3500;
 	var ENEMY_SHOOTING_FREQ = 1500;
 
 	var Enemies = Rx.Observable.interval(ENEMY_FREQ)
